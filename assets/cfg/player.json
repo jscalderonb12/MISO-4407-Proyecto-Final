@@ -1,0 +1,9 @@
+{
+    "image": "assets/img/player.png",
+    "animations": {
+        "number_frames": 32,
+        "initial_frame": 24,
+        "framerate": 20
+    },
+    "input_velocity": 0
+}
