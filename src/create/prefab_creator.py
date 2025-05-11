@@ -58,6 +58,23 @@ def create_player(world:esper.World, player_config:dict, pos_data:dict) -> int:
 
     return player_entity
 
+def create_bullet(world:esper.World, pos:pygame.Vector2, bullet_data:dict, direction:pygame.Vector2):
+    bullet_surface = pygame.image.load(bullet_data["image"]).convert_alpha()
+    bullet_size = bullet_surface.get_rect().size
+    pos.x -= bullet_size[0] / 2
+    pos.y -= bullet_size[1] / 2
+
+    vel = direction.normalize() * bullet_data["velocity"]
+
+    bullet_entity = create_sprite(world = world, surf = bullet_surface, pos = pos, vel = vel)
+    world.add_component(
+        bullet_entity,
+        CTagBullet()
+    )
+
+    return bullet_entity
+
+
 def create_input_player(world:esper.World):
     input_left_arrow = world.create_entity()
     input_right_arrow = world.create_entity()
@@ -80,4 +97,5 @@ def create_input_player(world:esper.World):
     world.add_component(input_down_wasd, CInputCommand(name="PLAYER_DOWN", key=pygame.K_s))
     world.add_component(input_start_game, CInputCommand(name="START_GAME", key=pygame.K_RETURN))
     world.add_component(input_fire, CInputCommand(name="PLAYER_FIRE", key=pygame.BUTTON_LEFT))
+    world.add_component(input_fire, CInputCommand(name="PLAYER_FIRE", key=pygame.K_f))
 

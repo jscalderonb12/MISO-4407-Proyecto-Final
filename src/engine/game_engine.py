@@ -1,13 +1,7 @@
 import json
 import pygame
 import esper
-from src.ecs.components.c_input_command import CInputCommand, CommandPhase
-from src.ecs.systems.s_rendering import system_rendering
-from src.ecs.systems.s_player_screen_limit import system_player_screen_limit
-from src.ecs.systems.s_animation import system_animation
-from src.ecs.systems.s_animation_player import system_animation_player
-from src.ecs.systems.s_input_player import system_input_player
-from src.create.prefab_creator import create_player, create_input_player
+from src.ecs.components.c_input_command import CInputCommand
 from src.engine.scenes.scene import Scene
 from src.game.menu_scene import MenuScene
 from src.game.play_scene import PlayScene
