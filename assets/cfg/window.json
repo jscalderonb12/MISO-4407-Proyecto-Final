@@ -2,7 +2,9 @@
     "title": "SPACE AVIATOR",
     "size": {
         "w": 224,
-        "h": 256
+        "h": 256,
+        "ui": 40,
+        "footer": 15
     },
     "bg_color": {
         "r": 0,

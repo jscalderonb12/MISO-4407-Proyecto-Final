@@ -32,6 +32,7 @@ class MenuScene(LayoutScene):
             self.switch_scene("LEVEL_01_SCENE")
 
     def do_draw(self, screen):
+        pygame.draw.rect(screen, (0, 0, 0), self._game_engine.game_rect) 
+        pygame.draw.rect(screen, (0, 0, 0), self._game_engine.footer_rect) 
         screen.blit(self.game_logo, (40, 65))
         super().do_draw(screen)
-        pygame.display.flip()

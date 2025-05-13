@@ -33,11 +33,11 @@ def create_sprite(world:esper.World, pos:pygame.Vector2, vel:pygame.Vector2, sur
 
     return sprite_entity
 
-def create_player(world:esper.World, player_config:dict, pos_data:dict) -> int:
+def create_player(world:esper.World, player_config:dict, game_rect:pygame.Rect) -> int:
     player_sprite = pygame.image.load(player_config["image"]).convert_alpha()
     size = player_sprite.get_size()
     size = (size[0] / player_config["animations"]["number_frames"], size[1])
-    pos = pygame.Vector2(pos_data["x"] - (size[0]/2), pos_data["y"] - (size[1]/2))
+    pos = pygame.Vector2((game_rect.width / 2) - (size[0] / 2), (game_rect.height / 2) + game_rect.top - (size[1] / 2))
     vel = pygame.Vector2(0, 0)
 
     player_entity = create_sprite(world = world, pos = pos, vel = vel, surf = player_sprite)
@@ -60,6 +60,7 @@ def create_player(world:esper.World, player_config:dict, pos_data:dict) -> int:
 
 def create_bullet(world:esper.World, pos:pygame.Vector2, bullet_data:dict, direction:pygame.Vector2):
     bullet_surface = pygame.image.load(bullet_data["image"]).convert_alpha()
+    bullet_surface = pygame.transform.scale(bullet_surface, (8, 8))
     bullet_size = bullet_surface.get_rect().size
     pos.x -= bullet_size[0] / 2
     pos.y -= bullet_size[1] / 2

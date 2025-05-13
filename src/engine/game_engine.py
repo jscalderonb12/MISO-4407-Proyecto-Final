@@ -13,9 +13,18 @@ class GameEngine:
         pygame.init()
         pygame.display.set_caption(self.window_config['title'])
 
-        self.screen = pygame.display.set_mode((self.window_config['size']['w'], self.window_config['size']['h']), pygame.SCALED)
-        self.interface_rect = pygame.Rect(0, 0, self.window_config['size']['w'], 40)
-        self.game_rect = pygame.Rect(0, 40, self.window_config['size']['w'], self.window_config['size']['h'] - 40)
+        self.UI_HEIGHT = self.window_config['size']['ui']
+        self.FOOTER_HEIGHT = self.window_config['size']['footer']
+        self.SCREEN_HEIGHT = self.window_config['size']['h']
+        self.SCREEN_WIDTH = self.window_config['size']['w']
+        
+        self.GAME_HEIGHT = self.SCREEN_HEIGHT - self.UI_HEIGHT - self.FOOTER_HEIGHT
+
+        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.SCALED)
+        self.interface_rect = pygame.Rect(0, 0, self.SCREEN_WIDTH, self.UI_HEIGHT)
+        self.game_rect = pygame.Rect(0, self.UI_HEIGHT, self.SCREEN_WIDTH, self.GAME_HEIGHT)
+        self.footer_rect = pygame.Rect(0, self.UI_HEIGHT + self.GAME_HEIGHT, self.SCREEN_WIDTH, self.FOOTER_HEIGHT)
+        
         self.bg_color = (self.window_config['bg_color']['r'], self.window_config['bg_color']['g'], self.window_config['bg_color']['b'])
         
         self.clock = pygame.time.Clock()
@@ -64,7 +73,6 @@ class GameEngine:
         self._current_scene.simulate(self.delta_time)
 
     def _draw(self):
-        self.screen.fill(self.bg_color)
         self._current_scene.do_draw(self.screen)
         pygame.display.flip()
 

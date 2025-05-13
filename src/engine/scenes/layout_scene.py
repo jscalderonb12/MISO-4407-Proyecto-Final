@@ -30,7 +30,6 @@ class LayoutScene(Scene):
         pygame.draw.rect(screen, (0, 0, 0), self._game_engine.interface_rect)
         self.draw_lives(screen, 4)
         super().do_draw(screen)
-        pygame.display.flip()
 
     def draw_lives(self, screen, num_lives):
         player_sprite = pygame.image.load(self.player_config["image"]).convert_alpha()

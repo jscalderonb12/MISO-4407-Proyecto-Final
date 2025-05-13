@@ -28,23 +28,23 @@ class PlayScene(LayoutScene):
         self.bg_color = (self.levels_config['level_01']['bg_color']['r'], self.levels_config['level_01']['bg_color']['g'], self.levels_config['level_01']['bg_color']['b'])
         
         self.player_position = "IDLE"
+        self._bullet_burst_queue = []
         self.active_inputs = set()
 
     def do_draw(self, screen):
-        screen.fill(self.bg_color)
+        pygame.draw.rect(screen, self.bg_color, self._game_engine.game_rect) 
         super().do_draw(screen)
         
     def do_create(self):
         super().do_create()
         self._bullet_entity_list = []
-        self._player_entity = create_player(self.ecs_world, self.player_config, self.levels_config["player_spawn"]["position"])
+        self._player_entity = create_player(self.ecs_world, self.player_config, self._game_engine.game_rect)
         create_input_player(self.ecs_world)
     
     def do_update(self, delta_time: float):
         system_movement(self.ecs_world, delta_time)
-        system_bullet_screen_limit(self.ecs_world, self.screen, self._bullet_entity_list)
+        system_bullet_screen_limit(self.ecs_world, self._game_engine.game_rect, self._bullet_entity_list)
         system_animation_player(self.ecs_world, self.player_position, delta_time)
-        system_player_screen_limit(self.ecs_world, self.screen)
 
     def do_action(self, action: CInputCommand):
         if action.name == "PLAYER_FIRE" and len(self._bullet_entity_list) < self.levels_config["player_spawn"]["max_bullets"]:
@@ -56,11 +56,15 @@ class PlayScene(LayoutScene):
                 player_rect.topleft = player_transform.pos
                 bullet_pos = pygame.Vector2(player_rect.center)
                 sprite_angle = (player_anim.current_frame * 11.25) - 90
-
                 rad_angle = math.radians(sprite_angle)
-
                 direction = pygame.Vector2(-math.cos(rad_angle), math.sin(rad_angle))
+
                 self._bullet_entity_list.append(create_bullet(self.ecs_world, bullet_pos, self.bullets_config, direction))
+                #now = pygame.time.get_ticks()
+
+                #for i in range(3):
+                    #delay_ms = i * 100
+                    #self._bullet_entity_list.append((now + delay_ms, bullet_pos.copy(), direction.copy()))
 
         else:
             key = action.name.replace("PLAYER_", "")
