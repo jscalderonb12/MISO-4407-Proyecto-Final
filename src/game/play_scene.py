@@ -3,6 +3,8 @@ import pygame
 import esper
 import math
 
+from src.ecs.components.c_rotation import CRotation
+from src.ecs.systems.s_update_rotation import system_update_rotation
 import src.engine.game_engine
 from src.engine.scenes.layout_scene import LayoutScene
 from src.ecs.components.c_surface import CSurface
@@ -45,26 +47,21 @@ class PlayScene(LayoutScene):
         system_movement(self.ecs_world, delta_time)
         system_bullet_screen_limit(self.ecs_world, self._game_engine.game_rect, self._bullet_entity_list)
         system_animation_player(self.ecs_world, self.player_position, delta_time)
+        system_update_rotation(self.ecs_world)
 
     def do_action(self, action: CInputCommand):
+        
         if action.name == "PLAYER_FIRE" and len(self._bullet_entity_list) < self.levels_config["player_spawn"]["max_bullets"]:
             if action.phase == CommandPhase.START:
                 player_transform = self.ecs_world.component_for_entity(self._player_entity, CTransform)
                 player_surf = self.ecs_world.component_for_entity(self._player_entity, CSurface)
-                player_anim = self.ecs_world.component_for_entity(self._player_entity, CAnimationPlayer)
+                player_rotation = self.ecs_world.component_for_entity(self._player_entity, CRotation)
+            
                 player_rect = player_surf.area.copy()
                 player_rect.topleft = player_transform.pos
                 bullet_pos = pygame.Vector2(player_rect.center)
-                sprite_angle = (player_anim.current_frame * 11.25) - 90
-                rad_angle = math.radians(sprite_angle)
-                direction = pygame.Vector2(-math.cos(rad_angle), math.sin(rad_angle))
 
-                self._bullet_entity_list.append(create_bullet(self.ecs_world, bullet_pos, self.bullets_config, direction))
-                #now = pygame.time.get_ticks()
-
-                #for i in range(3):
-                    #delay_ms = i * 100
-                    #self._bullet_entity_list.append((now + delay_ms, bullet_pos.copy(), direction.copy()))
+                self._bullet_entity_list.append(create_bullet(self.ecs_world, bullet_pos, self.bullets_config, player_rotation.direction))
 
         else:
             key = action.name.replace("PLAYER_", "")
@@ -89,3 +86,11 @@ class PlayScene(LayoutScene):
         else:
             combo = "_".join(directions[:2])
             self.player_position = combo
+
+    def _update_rotation(self):
+        player_anim = self.ecs_world.component_for_entity(self._player_entity, CAnimationPlayer)
+        sprite_angle = (player_anim.current_frame * 11.25) - 90
+        rad_angle = math.radians(sprite_angle)
+        self._player_c_dir.angle = rad_angle
+        self._player_c_dir.direction = pygame.Vector2(-math.cos(rad_angle), math.sin(rad_angle))
+
