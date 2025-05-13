@@ -3,6 +3,7 @@ import random
 import esper
 import pygame
 
+from src.ecs.components.c_rotation import CRotation
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
@@ -39,6 +40,7 @@ def create_player(world:esper.World, player_config:dict, game_rect:pygame.Rect) 
     size = (size[0] / player_config["animations"]["number_frames"], size[1])
     pos = pygame.Vector2((game_rect.width / 2) - (size[0] / 2), (game_rect.height / 2) + game_rect.top - (size[1] / 2))
     vel = pygame.Vector2(0, 0)
+    dir = pygame.Vector2(1, 1)
 
     player_entity = create_sprite(world = world, pos = pos, vel = vel, surf = player_sprite)
     world.add_component(
@@ -54,6 +56,11 @@ def create_player(world:esper.World, player_config:dict, game_rect:pygame.Rect) 
     world.add_component(
         player_entity,
         CPlayerState()
+    )
+
+    world.add_component(
+        player_entity,
+        CRotation(direction=dir)
     )
 
     return player_entity
