@@ -5,5 +5,5 @@
         "initial_frame": 24,
         "framerate": 20
     },
-    "input_velocity": 0
+    "input_velocity": 100
 }
