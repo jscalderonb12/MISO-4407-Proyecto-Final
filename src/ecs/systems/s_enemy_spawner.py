@@ -16,7 +16,7 @@ def system_enemy_spawner(world:esper.World, total_time:float, enemy_types:dict):
                 create_enemy_square(
                     world = world, 
                     pos = pygame.Vector2(spawn_event["position"]["x"], spawn_event["position"]["y"]),
-                    enemy_data = enemy_data,
+                    enemy_info = enemy_data,
                     enemy_type = spawn_event["enemy_type"]
                 )
                 spawn_event["trigger"] = False
