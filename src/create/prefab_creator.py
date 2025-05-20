@@ -3,7 +3,9 @@ import random
 import esper
 import pygame
 
+from src.ecs.components.c_animation_enemy import CAnimationEnemy
 from src.ecs.components.c_rotation import CRotation
+from src.ecs.components.c_shooter import CShooter
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
@@ -180,4 +182,75 @@ def create_input_player(world:esper.World):
     world.add_component(input_start_game, CInputCommand(name="START_GAME", key=pygame.K_RETURN))
     world.add_component(input_fire, CInputCommand(name="PLAYER_FIRE", key=pygame.BUTTON_LEFT))
     world.add_component(input_fire, CInputCommand(name="PLAYER_FIRE", key=pygame.K_f))
+
+def create_enemy_single(world: esper.World, pos: pygame.Vector2, cfg: dict):
+    """
+    Crea un enemigo que aparece solo (tipo 'single').
+    """
+    surf = ServiceLocator.images_service.get(cfg["sprite_sheet"])
+    vel = random.uniform(cfg.get("velocity_min", 0), cfg.get("velocity_max", 0))
+    angle_deg = cfg.get("spawn_angle_deg", random.choice([0, 90, 180, 270]))
+    rad = math.radians(angle_deg)
+    direction = pygame.Vector2(math.cos(rad), math.sin(rad))
+    entity = create_sprite(world, pos, direction * vel, surf)
+    world.add_component(entity, CTagEnemy())
+    # animation: static frame or directional
+    if cfg.get("frame_count", 1) > 1:
+        anim_cfg = {"number_frames": cfg["frame_count"], "framerate": cfg.get("framerate", 12), "initial_frame": int(angle_deg / 360 * cfg["frame_count"]) }
+        world.add_component(entity, CAnimationEnemy(anim_cfg))
+    return entity
+
+
+def create_enemy_squadron(world: esper.World, pos: pygame.Vector2, cfg: dict):
+    """
+    Crea un escuadrón de enemigos (tipo 'squadron').
+    """
+    squad = []
+    size = cfg.get("squad_size", 1)
+    for _ in range(size):
+        offset = pygame.Vector2(random.uniform(-30, 30), random.uniform(-30, 30))
+        squad.append(create_enemy_single(world, pos + offset, cfg))
+    return squad
+
+
+def create_enemy_chaser(world: esper.World, pos: pygame.Vector2, cfg: dict, player_pos: pygame.Vector2):
+    """
+    Crea un enemigo que persigue al jugador.
+    """
+    surf = ServiceLocator.images_service.get(cfg["sprite_sheet"])
+    vec = (player_pos - pos).normalize()
+    entity = create_sprite(world, pos, pygame.Vector2(0,0), surf)
+    world.add_component(entity, CTagEnemy())
+    world.add_component(entity, CTagChaseEnemy())
+    world.add_component(entity, CAnimationEnemy(cfg.get("animations", {})))
+    world.add_component(entity, CEnemyState(
+        velocity_chase=cfg["velocity_chase"],
+        velocity_return=cfg["velocity_return"],
+        distance_start_chase=cfg["distance_start_chase"],
+        distance_start_return=cfg["distance_start_return"]
+    ))
+    world.add_component(entity, CRotation(math.atan2(vec.y, vec.x)))
+    world.add_component(entity, CVelocity(pygame.Vector2(cfg["velocity_chase"],cfg["velocity_chase"])))
+    return entity
+
+
+def create_enemy_shooter(world: esper.World, pos: pygame.Vector2, cfg: dict):
+    """
+    Crea un enemigo que dispara desde posición fija.
+    """
+    surf = ServiceLocator.images_service.get(cfg["sprite_sheet"])
+    speed = cfg.get("velocity", 0)
+    angle_deg = cfg.get("spawn_angle_deg", random.choice([0, 90, 180, 270]))
+    rad = math.radians(angle_deg)
+    direction = pygame.Vector2(math.cos(rad), math.sin(rad))
+    entity = create_sprite(world, pos, direction * speed, surf)
+    world.add_component(entity, CTagEnemy())
+    world.add_component(entity, CShooter(
+        fire_rate=cfg["fire_rate"],
+        bullet_speed=cfg["bullet_speed"],
+        time_since_last=0.0
+    ))
+    world.add_component(entity, CRotation(rad))
+    return entity
+
 
