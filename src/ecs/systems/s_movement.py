@@ -5,6 +5,7 @@ from src.ecs.components.c_rotation import CRotation
 from src.ecs.components.c_velocity import CVelocity
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.tags.c_tag_bullet import CTagBullet
+from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.ecs.components.tags.c_tag_player import CTagPlayer
 
 def system_movement(world:World, delta_time:float):

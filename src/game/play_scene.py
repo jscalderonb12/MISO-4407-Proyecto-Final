@@ -4,6 +4,8 @@ import esper
 import math
 
 from src.ecs.components.c_rotation import CRotation
+from src.ecs.systems.s_animation_enemy import system_enemy_animation
+from src.ecs.systems.s_enemy_chase import system_enemy_chase
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
 from src.ecs.systems.s_update_rotation import system_update_rotation
 import src.engine.game_engine
@@ -60,6 +62,8 @@ class PlayScene(LayoutScene):
         system_world_movement(self.ecs_world, delta_time)
         system_bullet_screen_limit(self.ecs_world, self._game_engine.game_rect, self._bullet_entity_list)
         system_enemy_spawner(self.ecs_world, delta_time, self.enemies_cfg)
+        system_enemy_animation(self.ecs_world, delta_time)
+        system_enemy_chase(self.ecs_world, delta_time)
     
     def do_action(self, action: CInputCommand):
         
