@@ -13,6 +13,24 @@
             "b": 99
         }
     },
+    "cloud_spawn_events": [
+        {
+            "time": 0.0,
+            "type": "CloudLarge",
+            "position": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        {
+            "time": 0.0,
+            "type": "CloudLarge",
+            "position": {
+                "x": 0,
+                "y": 0
+            }
+        }
+    ],
     
     "enemy_spawn_events": [
         {

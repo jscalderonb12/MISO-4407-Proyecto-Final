@@ -15,8 +15,9 @@ from src.ecs.systems.s_player_screen_limit import system_player_screen_limit
 from src.ecs.systems.s_animation_player import system_animation_player
 from src.ecs.systems.s_bullet_screen_limit import system_bullet_screen_limit
 from src.ecs.systems.s_movement import system_movement
-
-from src.create.prefab_creator import create_player, create_input_player, create_bullet
+from src.ecs.systems.s_animation import system_animation
+from src.create.prefab_creator import create_player, create_input_player, create_bullet, create_cloud_spawner
+from src.ecs.systems.s_cloud_spawner import system_cloud_spawner
 
 class PlayScene(LayoutScene):
 
@@ -26,6 +27,8 @@ class PlayScene(LayoutScene):
             self.levels_config = json.load(levels_file)
         with open('assets/cfg/bullet.json') as bullets_file:
             self.bullets_config = json.load(bullets_file)
+        with open('assets/cfg/clouds.json') as clouds_file:
+            self.clouds_config = json.load(clouds_file)
             
         self.bg_color = (self.levels_config['level_01']['bg_color']['r'], self.levels_config['level_01']['bg_color']['g'], self.levels_config['level_01']['bg_color']['b'])
         
@@ -41,12 +44,15 @@ class PlayScene(LayoutScene):
         super().do_create()
         self._bullet_entity_list = []
         self._player_entity = create_player(self.ecs_world, self.player_config, self._game_engine.game_rect)
+        create_cloud_spawner(self.ecs_world, self.levels_config)
         create_input_player(self.ecs_world)
     
     def do_update(self, delta_time: float):
+        system_cloud_spawner(self.ecs_world, self._game_engine.total_time, self.clouds_config, self._game_engine.game_rect)
         system_movement(self.ecs_world, delta_time)
         system_bullet_screen_limit(self.ecs_world, self._game_engine.game_rect, self._bullet_entity_list)
         system_animation_player(self.ecs_world, self.player_position, delta_time)
+        system_animation(self.ecs_world, delta_time)
         system_update_rotation(self.ecs_world)
 
     def do_action(self, action: CInputCommand):

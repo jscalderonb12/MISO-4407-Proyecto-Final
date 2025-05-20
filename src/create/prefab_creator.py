@@ -16,6 +16,7 @@ from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.ecs.components.tags.c_tag_bullet import CTagBullet
 from src.ecs.components.c_player_state import CPlayerState
 from src.ecs.components.c_enemy_state import CEnemyState
+from src.ecs.components.c_cloud_spawner import CCloudSpawner
 
 def create_sprite(world:esper.World, pos:pygame.Vector2, vel:pygame.Vector2, surf:pygame.Surface) -> int:
     sprite_entity = world.create_entity()
@@ -64,6 +65,26 @@ def create_player(world:esper.World, player_config:dict, game_rect:pygame.Rect) 
     )
 
     return player_entity
+
+def create_cloud(world:esper.World, cloud_config:dict, game_rect:pygame.Rect):
+    cloud_sprite = pygame.image.load(cloud_config["image"]).convert_alpha()
+    size = cloud_sprite.get_size()
+    size = (size[0] / cloud_config["animations"]["number_frames"], size[1])
+    pos = pygame.Vector2(random.randint(game_rect.left, game_rect.right - size[0]), random.randint(game_rect.top, game_rect.bottom - size[1]))
+    vel = pygame.Vector2(0, 0)
+
+    cloud_entity = create_sprite(world = world, pos = pos, vel = vel, surf = cloud_sprite)
+    world.add_component(
+        cloud_entity,
+        CAnimation(cloud_config["animations"])
+    )
+
+def create_cloud_spawner(world:esper.World, level_data:dict):
+    cloud_spawner_entity = world.create_entity()
+    world.add_component(
+        cloud_spawner_entity, 
+        CCloudSpawner(levels=level_data)
+    )
 
 def create_bullet(world:esper.World, pos:pygame.Vector2, bullet_data:dict, direction:pygame.Vector2):
     bullet_surface = pygame.image.load(bullet_data["image"]).convert_alpha()

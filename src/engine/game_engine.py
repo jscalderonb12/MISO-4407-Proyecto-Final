@@ -31,9 +31,8 @@ class GameEngine:
         self.is_running = False
         self.framerate = self.window_config['framerate']
         self.delta_time = 0
+        self.total_time = 0
         self.ecs_world = esper.World()
-        
-
         self._scenes:dict[str, Scene] = {}
         self._scenes["MENU_SCENE"] = MenuScene(self)
         self._scenes["LEVEL_01_SCENE"] = PlayScene("assets/cfg/level_01.json", self)
@@ -62,6 +61,7 @@ class GameEngine:
     def _calculate_time(self):
         self.clock.tick(self.framerate)
         self.delta_time = self.clock.get_time() / 1000.0
+        self.total_time += self.delta_time
 
     def _process_events(self):
         for event in pygame.event.get():
