@@ -14,6 +14,7 @@ from src.ecs.components.c_animation_player import CAnimationPlayer
 from src.ecs.components.tags.c_tag_chase_enemy import CTagChaseEnemy
 from src.ecs.components.tags.c_tag_player import CTagPlayer
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
+from src.ecs.components.tags.c_tag_cloud import CTagCloud
 from src.ecs.components.tags.c_tag_bullet import CTagBullet
 from src.ecs.components.c_player_state import CPlayerState
 from src.ecs.components.c_enemy_state import CEnemyState
@@ -125,6 +126,10 @@ def create_cloud(world:esper.World, cloud_config:dict, game_rect:pygame.Rect):
     world.add_component(
         cloud_entity,
         CAnimation(cloud_config["animations"])
+    )
+    world.add_component(
+        cloud_entity,
+        CTagCloud()
     )
 
 def create_cloud_spawner(world:esper.World, level_data:dict):

@@ -6,10 +6,13 @@ import pygame
 
 from src.ecs.components.c_animation_player import CAnimationPlayer
 from src.ecs.components.c_rotation import CRotation
+from src.ecs.components.tags.c_tag_enemy import CTagEnemy
+from src.ecs.components.tags.c_tag_cloud import CTagCloud
+from src.ecs.components.tags.c_tag_player import CTagPlayer
 
 
 def system_update_rotation(world:World):
-    query = world.get_components(CAnimationPlayer, CRotation)
+    query = world.get_components(CAnimationPlayer, CRotation, CTagPlayer)
     
     for _, components in query:
         c_a: CAnimationPlayer = components[0]

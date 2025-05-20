@@ -12,7 +12,6 @@ from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_animation_player import CAnimationPlayer
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
-from src.ecs.systems.s_player_screen_limit import system_player_screen_limit
 from src.ecs.systems.s_animation_player import system_animation_player
 from src.ecs.systems.s_bullet_screen_limit import system_bullet_screen_limit
 from src.ecs.systems.s_movement import system_movement
@@ -20,7 +19,7 @@ from src.ecs.systems.s_animation import system_animation
 from src.create.prefab_creator import create_player, create_input_player, create_bullet, create_cloud_spawner
 from src.ecs.systems.s_cloud_spawner import system_cloud_spawner
 from src.ecs.systems.s_movement import system_apply_velocity, system_world_movement
-
+from src.ecs.systems.s_screen_limit import system_screen_limit
 from src.create.prefab_creator import create_enemy_spawner, create_player, create_input_player, create_bullet
 
 class PlayScene(LayoutScene):
@@ -53,17 +52,13 @@ class PlayScene(LayoutScene):
         super().do_draw(screen)
         
     def do_create(self):
-        super().do_create()
         self._bullet_entity_list = []
         self._player_entity = create_player(self.ecs_world, self.player_config, self._game_engine.game_rect)
         create_cloud_spawner(self.ecs_world, self.levels_config)
         create_enemy_spawner(self.ecs_world, self.level_01_cfg)
         create_input_player(self.ecs_world)
-    
-    def do_update(self, delta_time: float):
-        system_cloud_spawner(self.ecs_world, self._game_engine.total_time, self.clouds_config, self._game_engine.game_rect)
-        system_movement(self.ecs_world, delta_time)
-        system_bullet_screen_limit(self.ecs_world, self._game_engine.game_rect, self._bullet_entity_list)
+        
+        super().do_create()
     
     def do_update(self, delta_time: float):
         system_animation_player(self.ecs_world, self.player_position, delta_time)
@@ -72,6 +67,7 @@ class PlayScene(LayoutScene):
         system_apply_velocity(self.ecs_world, delta_time)
         system_world_movement(self.ecs_world, delta_time)
         system_bullet_screen_limit(self.ecs_world, self._game_engine.game_rect, self._bullet_entity_list)
+        system_cloud_spawner(self.ecs_world, self._game_engine.total_time, self.clouds_config, self._game_engine.game_rect)
         system_enemy_spawner(self.ecs_world, delta_time, self.enemies_cfg)
     
     def do_action(self, action: CInputCommand):
