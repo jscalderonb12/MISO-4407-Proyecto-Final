@@ -11,12 +11,14 @@ from src.ecs.components.c_enemy_spawner import CEnemySpawner
 from src.ecs.components.c_input_command import CInputCommand
 from src.ecs.components.c_animation import CAnimation
 from src.ecs.components.c_animation_player import CAnimationPlayer
+from src.ecs.components.tags.c_tag_chase_enemy import CTagChaseEnemy
 from src.ecs.components.tags.c_tag_player import CTagPlayer
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.ecs.components.tags.c_tag_bullet import CTagBullet
 from src.ecs.components.c_player_state import CPlayerState
 from src.ecs.components.c_enemy_state import CEnemyState
 from src.ecs.components.c_cloud_spawner import CCloudSpawner
+from src.engine.service_locator import ServiceLocator
 
 def create_sprite(world:esper.World, pos:pygame.Vector2, vel:pygame.Vector2, surf:pygame.Surface) -> int:
     sprite_entity = world.create_entity()
@@ -35,12 +37,58 @@ def create_sprite(world:esper.World, pos:pygame.Vector2, vel:pygame.Vector2, sur
 
     return sprite_entity
 
+def create_enemy_spawner(world: esper.World, level_data: dict):
+    spawner_entity = world.create_entity()
+    world.add_component(spawner_entity, CEnemySpawner(level_data))
+
+def create_enemy_square(world: esper.World, pos: pygame.Vector2, enemy_info: dict, enemy_type: str):
+    if enemy_type == "Hunter":
+        create_ia_enemy(world, pos, enemy_info)
+    else:
+        enemy_surface = ServiceLocator.images_service.get(enemy_info["image"])
+        vel_max = enemy_info["velocity_max"]
+        vel_min = enemy_info["velocity_min"]
+        vel_range_x = vel_min + (random.random() * (vel_max - vel_min))
+        vel_range_y = vel_min + (random.random() * (vel_max - vel_min))
+        velocity = pygame.Vector2(
+            random.choice([-vel_range_x, vel_range_x]),
+            random.choice([-vel_range_y, vel_range_y]),
+        )
+        enemy_entity = create_sprite(world, pos, velocity, enemy_surface)
+        world.add_component(enemy_entity, CTagEnemy())
+        ServiceLocator.sounds_service.play(enemy_info["sound"])
+
+def create_ia_enemy(world, pos, enemy_info):
+    enemy_sprite = ServiceLocator.images_service.get(enemy_info["image"])
+
+    # Obtener tamaño de frame individual del sprite animado
+    total_frames = enemy_info["animations"]["number_frames"]
+    size = enemy_sprite.get_size()
+    size = (size[0] / total_frames, size[1])
+
+    # Posición ajustada al centro del sprite
+    pos = pygame.Vector2(pos.x - (size[0] / 2), pos.y - (size[1] / 2))
+
+    velocity = pygame.Vector2(0, 0)  # empieza quieto
+
+    enemy_entity = create_sprite(world, pos, velocity, enemy_sprite)
+    world.add_component(enemy_entity, CTagEnemy())
+    world.add_component(enemy_entity, CTagChaseEnemy())
+    world.add_component(enemy_entity, CAnimation(enemy_info["animations"]))
+    world.add_component(enemy_entity, CEnemyState(
+        velocity_chase= enemy_info["velocity_chase"],
+        velocity_return= enemy_info["velocity_return"],
+        distance_start_chase= enemy_info["distance_start_chase"],
+        distance_start_return= enemy_info["distance_start_return"]
+    ))
+    # world.add_component(enemy_entity, COriginEnemy(pos.copy()))
+
 def create_player(world:esper.World, player_config:dict, game_rect:pygame.Rect) -> int:
     player_sprite = pygame.image.load(player_config["image"]).convert_alpha()
     size = player_sprite.get_size()
     size = (size[0] / player_config["animations"]["number_frames"], size[1])
     pos = pygame.Vector2((game_rect.width / 2) - (size[0] / 2), (game_rect.height / 2) + game_rect.top - (size[1] / 2))
-    vel = pygame.Vector2(0, 0)
+    vel = pygame.Vector2(player_config["input_velocity"], player_config["input_velocity"])
     dir = pygame.Vector2(1, 1)
 
     player_entity = create_sprite(world = world, pos = pos, vel = vel, surf = player_sprite)

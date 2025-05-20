@@ -4,6 +4,7 @@ import esper
 import math
 
 from src.ecs.components.c_rotation import CRotation
+from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
 from src.ecs.systems.s_update_rotation import system_update_rotation
 import src.engine.game_engine
 from src.engine.scenes.layout_scene import LayoutScene
@@ -18,23 +19,34 @@ from src.ecs.systems.s_movement import system_movement
 from src.ecs.systems.s_animation import system_animation
 from src.create.prefab_creator import create_player, create_input_player, create_bullet, create_cloud_spawner
 from src.ecs.systems.s_cloud_spawner import system_cloud_spawner
+from src.ecs.systems.s_movement import system_apply_velocity, system_world_movement
+
+from src.create.prefab_creator import create_enemy_spawner, create_player, create_input_player, create_bullet
 
 class PlayScene(LayoutScene):
 
     def __init__(self, level_path:str, engine:'src.engine.game_engine.GameEngine') -> None:
         super().__init__(engine)
-        with open(level_path) as levels_file:
-            self.levels_config = json.load(levels_file)
-        with open('assets/cfg/bullet.json') as bullets_file:
-            self.bullets_config = json.load(bullets_file)
-        with open('assets/cfg/clouds.json') as clouds_file:
-            self.clouds_config = json.load(clouds_file)
+        self._load_config_files(level_path)
             
         self.bg_color = (self.levels_config['level_01']['bg_color']['r'], self.levels_config['level_01']['bg_color']['g'], self.levels_config['level_01']['bg_color']['b'])
         
         self.player_position = "IDLE"
         self._bullet_burst_queue = []
         self.active_inputs = set()
+
+    def _load_config_files(self, level_path:str):
+        with open(level_path) as levels_file:
+            self.levels_config = json.load(levels_file)
+        with open('assets/cfg/bullet.json') as bullets_file:
+            self.bullets_config = json.load(bullets_file)
+        with open("assets/cfg/enemies.json", encoding="utf-8") as enemies_file:
+            self.enemies_cfg = json.load(enemies_file)
+        with open("assets/cfg/level_01.json", encoding="utf-8") as level_01_file:
+            self.level_01_cfg = json.load(level_01_file)
+        with open('assets/cfg/clouds.json') as clouds_file:
+            self.clouds_config = json.load(clouds_file)
+
 
     def do_draw(self, screen):
         pygame.draw.rect(screen, self.bg_color, self._game_engine.game_rect) 
@@ -45,16 +57,23 @@ class PlayScene(LayoutScene):
         self._bullet_entity_list = []
         self._player_entity = create_player(self.ecs_world, self.player_config, self._game_engine.game_rect)
         create_cloud_spawner(self.ecs_world, self.levels_config)
+        create_enemy_spawner(self.ecs_world, self.level_01_cfg)
         create_input_player(self.ecs_world)
     
     def do_update(self, delta_time: float):
         system_cloud_spawner(self.ecs_world, self._game_engine.total_time, self.clouds_config, self._game_engine.game_rect)
         system_movement(self.ecs_world, delta_time)
         system_bullet_screen_limit(self.ecs_world, self._game_engine.game_rect, self._bullet_entity_list)
+    
+    def do_update(self, delta_time: float):
         system_animation_player(self.ecs_world, self.player_position, delta_time)
         system_animation(self.ecs_world, delta_time)
         system_update_rotation(self.ecs_world)
-
+        system_apply_velocity(self.ecs_world, delta_time)
+        system_world_movement(self.ecs_world, delta_time)
+        system_bullet_screen_limit(self.ecs_world, self._game_engine.game_rect, self._bullet_entity_list)
+        system_enemy_spawner(self.ecs_world, delta_time, self.enemies_cfg)
+    
     def do_action(self, action: CInputCommand):
         
         if action.name == "PLAYER_FIRE" and len(self._bullet_entity_list) < self.levels_config["player_spawn"]["max_bullets"]:
