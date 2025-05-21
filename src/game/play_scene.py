@@ -94,7 +94,7 @@ class PlayScene(LayoutScene):
         system_cloud_screen_limit(self.ecs_world, self.screen)
         system_collision_player_enemy(self.ecs_world, self._player_entity, self.level_01_cfg["player_spawn"]["position"], self.explosions_config)
         system_collision_player_enemy_bullet(self.ecs_world, self._player_entity, self.level_01_cfg["player_spawn"]["position"], self.explosions_config)
-        system_collision_bullet_enemy(self.ecs_world, self._bullet_entity_list, self.explosions_config)
+        self.score += system_collision_bullet_enemy(self.ecs_world, self._bullet_entity_list, self.explosions_config)
         system_collision_between_bullets(self.ecs_world, self._bullet_entity_list, self.explosions_config)
         system_explosion_cleanup(self.ecs_world, delta_time)
         system_animation(self.ecs_world, delta_time)
