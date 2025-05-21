@@ -1,6 +1,7 @@
 import json
 import pygame
 import esper
+import asyncio
 from src.ecs.components.c_input_command import CInputCommand
 from src.engine.scenes.scene import Scene
 from src.game.menu_scene import MenuScene
@@ -43,7 +44,7 @@ class GameEngine:
         self._current_scene:Scene = None
         self._scene_name_to_switch:str = None
 
-    def run(self, start_scene_name:str) -> None:
+    async def run(self, start_scene_name:str) -> None:
         self.is_running = True
         self._current_scene = self._scenes[start_scene_name]
         self._create()
@@ -53,6 +54,7 @@ class GameEngine:
             self._update()
             self._draw()
             self._handle_switch_scene()
+            await asyncio.sleep(0)
         self._do_clean()
 
     def switch_scene(self, new_scene_name:str):
