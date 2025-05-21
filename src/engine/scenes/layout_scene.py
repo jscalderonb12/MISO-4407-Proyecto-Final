@@ -6,6 +6,7 @@ from src.create.prefab_creator_interface import TextAlignment, create_text
 from src.ecs.components.c_input_command import CInputCommand
 from src.create.prefab_creator import create_input_player
 from src.ecs.components.c_surface import CSurface
+from src.ecs.systems.s_rendering_texts import system_rendering_texts
 
 class LayoutScene(Scene):
 
@@ -18,19 +19,22 @@ class LayoutScene(Scene):
 
     def do_create(self):
         self.title_color = pygame.Color(self.interface_config['title_text_color']['r'], self.interface_config['title_text_color']['g'], self.interface_config['title_text_color']['b'])
-        #pygame.draw.rect(self.screen, (0, 0, 0), self._game_engine.interface_rect)
-        interface_entity = self.ecs_world.create_entity()
-        self.ecs_world.add_component(interface_entity, CSurface((self._game_engine.interface_rect.width, self._game_engine.interface_rect.height), (0,0,0)))
-        pygame.draw.rect(self.screen, (0, 0, 0), self._game_engine.footer_rect)
         create_text(self.ecs_world, "1-UP", 8, self.title_color, pygame.Vector2(0, 0), TextAlignment.LEFT)
         create_text(self.ecs_world, "HI-SCORE", 8, pygame.Color(255, 0, 0), pygame.Vector2(112, 0), TextAlignment.CENTER)
         create_text(self.ecs_world, "0", 8, pygame.Color(255, 255, 255), pygame.Vector2(0, 10), TextAlignment.LEFT)
         create_text(self.ecs_world, "0", 8, pygame.Color(255, 255, 255), pygame.Vector2(112, 10), TextAlignment.CENTER)
-        self.draw_lives(self.screen, 4)
         
 
     def do_draw(self, screen):
         super().do_draw(screen)
+        pygame.draw.rect(self.screen, (0, 0, 0), self._game_engine.interface_rect)
+        pygame.draw.rect(self.screen, (0, 0, 0), self._game_engine.footer_rect)
+        system_rendering_texts(self.ecs_world, screen)
+        self.draw_lives(self.screen, 2)
+
+
+    def do_update(self, delta_time):
+        super().do_update(delta_time)
 
     def draw_lives(self, screen, num_lives):
         player_sprite = pygame.image.load(self.player_config["image"]).convert_alpha()

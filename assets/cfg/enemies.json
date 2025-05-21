@@ -49,7 +49,7 @@
         "framerate": 12,
         "initial_frame": 0
     },
-    "velocity_chase": 80,
+    "velocity_chase": 50,
     "velocity_return": 150,
     "distance_start_chase": 80,
     "distance_start_return": 200

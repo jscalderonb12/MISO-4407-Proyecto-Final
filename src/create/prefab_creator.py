@@ -117,22 +117,25 @@ def create_player(world:esper.World, player_config:dict, game_rect:pygame.Rect) 
 
     return player_entity
 
-def create_cloud(world:esper.World, cloud_config:dict, game_rect:pygame.Rect):
-    cloud_sprite = pygame.image.load(cloud_config["image"]).convert_alpha()
-    size = cloud_sprite.get_size()
-    size = (size[0] / cloud_config["animations"]["number_frames"], size[1])
-    pos = pygame.Vector2(random.randint(game_rect.left, game_rect.right - size[0]), random.randint(game_rect.top, game_rect.bottom - size[1]))
-    vel = pygame.Vector2(0, 0)
+def create_cloud(world:esper.World, level_config:dict, clouds_config:dict, is_cloud_large:bool):
+    for clouds_spawn_event in level_config["cloud_spawn_events"]:
+        if (is_cloud_large and clouds_spawn_event["type"] == "CloudLarge") or (not is_cloud_large and clouds_spawn_event["type"] != "CloudLarge"):
+            cloud_pos = pygame.Vector2(clouds_spawn_event["position"]["x"], clouds_spawn_event["position"]["y"])
+            cloud_config = clouds_config[clouds_spawn_event["type"]]
+            cloud_sprite = pygame.image.load(cloud_config["image"]).convert_alpha()
+            size = cloud_sprite.get_size()
+            size = (size[0] / cloud_config["animations"]["number_frames"], size[1])
+            vel = pygame.Vector2(cloud_config["velocity"], cloud_config["velocity"])
 
-    cloud_entity = create_sprite(world = world, pos = pos, vel = vel, surf = cloud_sprite)
-    world.add_component(
-        cloud_entity,
-        CAnimation(cloud_config["animations"])
-    )
-    world.add_component(
-        cloud_entity,
-        CTagCloud()
-    )
+            cloud_entity = create_sprite(world = world, pos = cloud_pos, vel = vel, surf = cloud_sprite)
+            world.add_component(
+                cloud_entity,
+                CAnimation(cloud_config["animations"])
+            )
+            world.add_component(
+                cloud_entity,
+                CTagCloud()
+            )
 
 def create_cloud_spawner(world:esper.World, level_data:dict):
     cloud_spawner_entity = world.create_entity()
