@@ -303,7 +303,9 @@ def create_enemy_chaser(world: esper.World, pos: pygame.Vector2, cfg: dict, play
         velocity_chase=cfg["velocity_chase"],
         velocity_return=cfg["velocity_return"],
         distance_start_chase=cfg["distance_start_chase"],
-        distance_start_return=cfg["distance_start_return"]
+        distance_start_return=cfg["distance_start_return"],
+        shot_live=cfg.get("shot_live", 1),
+        type=cfg.get("type", "default")
     ))
     if random.random() < cfg.get("shoot_probability", 0.0):
         world.add_component(

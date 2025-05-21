@@ -36,14 +36,66 @@
         "framerate": 12,
         "initial_frame": 0
     },
-    "velocity_min": 60,
-    "velocity_max": 70,
+    "velocity_min": 40,
+    "velocity_max": 50,
     "squad_size": 5,
     "spacing": 10,
     "chaser_probability": 0.3,
     "shoot_probability": 0.3,
     "shoot_rate": 5,
     "bullet_speed": 100  
+  },
+  "RedChaser": {
+    "type": "chaser",
+    "sprite_sheet": "assets/img/enemy_01.png",
+    "frame_count": 16,
+    "animations": {
+        "number_frames": 16,
+        "framerate": 12,
+        "initial_frame": 0
+    },
+    "velocity_chase": 60,
+    "velocity_return": 50,
+    "distance_start_chase": 80,
+    "distance_start_return": 200,
+    "shoot_probability": 1.0,
+    "shoot_rate": 5,
+    "bullet_speed": 100   
+  },
+  "RedSingle": {
+    "type": "single",
+    "sprite_sheet": "assets/img/enemy_01.png",
+    "frame_count": 16,
+    "animations": {
+        "number_frames": 16,
+        "framerate": 12,
+        "initial_frame": 0
+    },
+    "velocity_chase": 60,
+    "velocity_return": 50,
+    "distance_start_chase": 80,
+    "distance_start_return": 200,
+    "shoot_probability": 1.0,
+    "shoot_rate": 5,
+    "bullet_speed": 100   
+  },
+  "Boss": {
+    "type": "boss",
+    "sprite_sheet": "assets/img/boss_level_01.png",
+    "frame_count": 16,
+    "animations": {
+        "number_frames": 4,
+        "framerate": 12,
+        "initial_frame": 0
+    },
+    "velocity_chase": 40,
+    "velocity_return": 30,
+    "distance_start_chase": 80,
+    "distance_start_return": 200,
+    "shoot_probability": 10.0,
+    "shoot_rate": 5,
+    "bullet_speed": 100, 
+    "shot_live": 3  
   },
   "YellowChaser": {
     "type": "chaser",

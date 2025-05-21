@@ -1,7 +1,7 @@
 {
     "PLAYER": {
         "sound": "assets/snd/player_die.ogg",
-        "image": "assets/img/explosion_bullets_space_05.png",
+        "image": "assets/img/explosion_large.png",
         "animations": {
             "number_frames": 4,
             "list": [

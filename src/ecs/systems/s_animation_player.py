@@ -3,6 +3,7 @@ import esper
 from enum import Enum
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_animation_player import CAnimationPlayer
+from src.ecs.components.tags.c_tag_hidden_player import CTagHiddenPlayer
 
 class PlayerPosition(Enum):
     UP = 0
@@ -18,7 +19,7 @@ class PlayerPosition(Enum):
     def has_key(key):
         return key in PlayerPosition.__members__
 
-def system_animation_player(world:esper.World, player_movement:str, delta_time:float):
+def system_animation_player(world:esper.World, player_movement:str, delta_time:float, player_entity:int):
     components = world.get_components(CSurface, CAnimationPlayer)
     for _, (surface, animation) in components:
         animation.current_animation_time -= delta_time
@@ -26,7 +27,7 @@ def system_animation_player(world:esper.World, player_movement:str, delta_time:f
         if animation.current_animation_time <= 0:
             animation.current_animation_time = animation.framerate
 
-            if player_movement != "IDLE" and PlayerPosition.has_key(player_movement):
+            if player_movement != "IDLE" and PlayerPosition.has_key(player_movement) and not world.has_component(player_entity, CTagHiddenPlayer):
                 target_frame = PlayerPosition[player_movement].value
                 total_frames = animation.number_frames
                 current = animation.current_frame

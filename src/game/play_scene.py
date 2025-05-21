@@ -11,7 +11,7 @@ from src.ecs.systems.s_collision_player_enemy import system_collision_player_ene
 from src.ecs.systems.s_collision_player_enemy_bullet import system_collision_player_enemy_bullet
 from src.ecs.systems.s_enemy_chase import system_enemy_chase
 from src.ecs.systems.s_enemy_shoot import system_enemy_shoot
-from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
+from src.ecs.systems.s_enemy_spawner import system_enemy_spawner, system_restart_enemy_spawner
 from src.ecs.systems.s_explosion_cleanup import system_explosion_cleanup
 from src.ecs.systems.s_update_rotation import system_update_rotation
 import src.engine.game_engine
@@ -22,11 +22,11 @@ from src.ecs.components.c_animation_player import CAnimationPlayer
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 from src.ecs.systems.s_animation_player import system_animation_player
 from src.ecs.systems.s_bullet_screen_limit import system_bullet_screen_limit
-from src.ecs.systems.s_movement import system_movement
+from src.ecs.systems.s_enemy_bullet_screen_limit import system_enemy_bullet_screen_limit
+from src.ecs.systems.s_enemy_screen_limit import system_enemy_screen_limit
 from src.ecs.systems.s_animation import system_animation
 from src.create.prefab_creator import create_player, create_input_player, create_bullet, create_cloud_spawner, create_cloud
 from src.create.prefab_creator_interface import create_text, TextAlignment, create_blinking_text, update_text
-from src.ecs.systems.s_cloud_spawner import system_cloud_spawner
 from src.ecs.systems.s_movement import system_apply_velocity, system_world_movement
 from src.ecs.systems.s_cloud_screen_limit import system_cloud_screen_limit
 from src.create.prefab_creator import create_enemy_spawner, create_player, create_input_player, create_bullet
@@ -34,13 +34,15 @@ from src.engine.service_locator import ServiceLocator
 from src.ecs.systems.s_pause_game import system_pause_game
 from src.ecs.systems.s_text_blink import system_text_blink
 from src.ecs.systems.s_deleting_init_texts import system_deleting_init_texts
+from src.ecs.systems.s_deleting_init_texts import system_deleting_init_texts
+from src.ecs.systems.s_rendering_player import system_rendering_player
 
 class PlayScene(LayoutScene):
 
     def __init__(self, level_path:str, engine:'src.engine.game_engine.GameEngine') -> None:
         super().__init__(engine)
         self._load_config_files(level_path)
-            
+
         self.bg_color = (self.levels_config['level_01']['bg_color']['r'], self.levels_config['level_01']['bg_color']['g'], self.levels_config['level_01']['bg_color']['b'])
         
         self.player_position = "IDLE"
@@ -48,8 +50,8 @@ class PlayScene(LayoutScene):
         self.active_inputs = set()
         self.pause_game = False
         self.pause_text = None
-        self.start_game_text = []
-        self.score = 0
+        self.max_lives = [4]
+        self.start_game_text = ["PLAYER 1", "A.D. 1910", "STAGE 1"]
 
     def _load_config_files(self, level_path:str):
         with open(level_path) as levels_file:
@@ -72,40 +74,41 @@ class PlayScene(LayoutScene):
         
     def do_create(self):
         ServiceLocator.sounds_service.play("assets/snd/game_start.ogg")
+        self._game_engine.total_time = 0
         self._bullet_entity_list = []
         create_cloud(self.ecs_world, self.levels_config, self.clouds_config, is_cloud_large=False)
         self._player_entity = create_player(self.ecs_world, self.player_config, self._game_engine.game_rect)
         create_enemy_spawner(self.ecs_world, self.level_01_cfg)
+        system_restart_enemy_spawner(self.ecs_world)
         create_cloud(self.ecs_world, self.levels_config, self.clouds_config, is_cloud_large=True)
         create_input_player(self.ecs_world)
-        self.texts_entities = self.crete_init_text(["PLAYER 1", "A.D. 1910", "STAGE 1"])
+        self.texts_entities = self.crete_init_text(self.start_game_text)
         super().do_create()
     
     def do_update(self, delta_time: float):
-        system_animation_player(self.ecs_world, self.player_position, delta_time)
+        system_rendering_player(self.ecs_world, self._game_engine.delta_time, self.switch_scene, self.start_game_text_update)
+        system_animation_player(self.ecs_world, self.player_position, delta_time, self._player_entity)
         system_update_rotation(self.ecs_world)
         system_apply_velocity(self.ecs_world, delta_time)
         system_world_movement(self.ecs_world, delta_time)
         system_enemy_shoot(self.ecs_world, delta_time, self.enemy_bullets_config)
         system_bullet_screen_limit(self.ecs_world, self._game_engine.game_rect, self._bullet_entity_list)
-        system_enemy_spawner(self.ecs_world, delta_time, self.enemies_cfg, self._game_engine.game_rect)
+        system_enemy_bullet_screen_limit(self.ecs_world, self._game_engine.game_rect)
+        system_enemy_screen_limit(self.ecs_world, self.screen)
+        system_enemy_spawner(self.ecs_world, self._game_engine.total_time, self.enemies_cfg, self._game_engine.game_rect, self.plane_counter_stage)
         system_enemy_animation(self.ecs_world, delta_time)
         system_enemy_chase(self.ecs_world, delta_time)
         system_cloud_screen_limit(self.ecs_world, self.screen)
-        system_collision_player_enemy(self.ecs_world, self._player_entity, self.level_01_cfg["player_spawn"]["position"], self.explosions_config)
+        system_collision_player_enemy(self.ecs_world, self._player_entity, self.explosions_config, self.lose_lives, self.switch_scene, self.update_score, self.max_lives, self.start_game_text_update, self.score, self.damage_plane_counter, self.plane_counter_stage)
         system_collision_player_enemy_bullet(self.ecs_world, self._player_entity, self.level_01_cfg["player_spawn"]["position"], self.explosions_config)
-        self.score += system_collision_bullet_enemy(self.ecs_world, self._bullet_entity_list, self.explosions_config)
+        system_collision_bullet_enemy(self.ecs_world, self._bullet_entity_list, self.explosions_config, self.damage_plane_counter, self.update_score, self._player_entity)
         system_collision_between_bullets(self.ecs_world, self._bullet_entity_list, self.explosions_config)
         system_explosion_cleanup(self.ecs_world, delta_time)
         system_animation(self.ecs_world, delta_time)
         system_pause_game(self.ecs_world, self.pause_game)
         system_text_blink(self.ecs_world, self.screen, self._game_engine.total_time)
         self.texts_entities = system_deleting_init_texts(self.ecs_world, self._game_engine.total_time, self.texts_entities)
-        update_text(self.ecs_world, self.current_score_surface, str(self.score))
-        update_text(self.ecs_world, self.high_score_surface, str(self.high_score))
-        """ self.score += 1
-        if self.score > self.high_score:
-            self.high_score = self.score """
+        
 
         super().do_update(delta_time)
     
@@ -189,4 +192,14 @@ class PlayScene(LayoutScene):
             initial_pos_y += 40
 
         return texts_entities
+    
+    def update_score(self):
+        self.score[0] += 100
+        update_text(self.ecs_world, self.current_score_surface, str(self.score[0]))
+        if self.score[0] > self.high_score[0]:
+            self.high_score[0] = self.score[0]
+            update_text(self.ecs_world, self.high_score_surface, str(self.high_score[0]))
+
+    def start_game_text_update(self, texts:list = []):
+        self.start_game_text = texts
 
