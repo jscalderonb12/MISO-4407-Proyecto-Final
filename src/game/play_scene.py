@@ -87,9 +87,9 @@ class PlayScene(LayoutScene):
         system_pause_game(self.ecs_world, self.pause_game)
         system_text_blink(self.ecs_world, self.screen, self._game_engine.total_time)
         self.texts_entities = system_deleting_init_texts(self.ecs_world, self._game_engine.total_time, self.texts_entities)
-        """ update_text(self.ecs_world, self.current_score_surface, str(self.score))
+        update_text(self.ecs_world, self.current_score_surface, str(self.score))
         update_text(self.ecs_world, self.high_score_surface, str(self.high_score))
-        self.score += 1
+        """ self.score += 1
         if self.score > self.high_score:
             self.high_score = self.score """
 
