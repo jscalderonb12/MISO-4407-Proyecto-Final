@@ -9,6 +9,7 @@ from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.ecs.components.tags.c_tag_player import CTagPlayer
 from src.ecs.components.tags.c_tag_text import CTagText
 from src.ecs.components.tags.c_tag_cloud import CTagCloud
+from src.ecs.components.tags.c_tag_pause import CTagPause
 
 def system_movement(world:World, delta_time:float):
     components = world.get_components(CTransform, CVelocity)
@@ -38,8 +39,9 @@ def system_world_movement(world:World, delta_time: float):
     # Desplaza todas las entidades menos la nave
     for ent, transform in world.get_component(CTransform):
         if world.has_component(ent, CTagPlayer)\
-           or world.has_component(ent, CTagBullet)\
-           or world.has_component(ent, CTagText):
+            or world.has_component(ent, CTagBullet)\
+            or world.has_component(ent, CTagText)\
+            or world.has_component(ent, CTagPause):
             continue
 
         if world.has_component(ent, CTagCloud):
@@ -55,7 +57,7 @@ def system_world_movement(world:World, delta_time: float):
 
 def system_apply_velocity(world, delta_time: float):
     for ent, (transform, velocity) in world.get_components(CTransform, CVelocity):
-        if world.has_component(ent, CTagPlayer) or world.has_component(ent, CTagCloud):
+        if world.has_component(ent, CTagPlayer) or world.has_component(ent, CTagCloud) or world.has_component(ent, CTagPause):
             continue
         transform.pos.x += (velocity.vel.x) * delta_time
         transform.pos.y += (velocity.vel.y) * delta_time
