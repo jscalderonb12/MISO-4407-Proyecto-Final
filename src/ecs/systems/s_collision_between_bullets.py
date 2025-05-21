@@ -4,10 +4,10 @@ from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.create.prefab_creator import create_explosion
+from src.ecs.components.tags.c_tag_enemy_bullet import CTagEnemyBullet
 
-def system_collision_bullet_enemy(world:esper.World, bullet_entity_list:list[int], explosion_data:dict):
-    components = world.get_components(CSurface, CTransform, CTagEnemy)
-    enemies_destroyed = 0
+def system_collision_between_bullets(world:esper.World, bullet_entity_list:list[int], explosion_data:dict):
+    components = world.get_components(CSurface, CTransform, CTagEnemyBullet)
     for bullet_entity in bullet_entity_list:
         bullet_transform = world.component_for_entity(bullet_entity, CTransform)
         bullet_surface = world.component_for_entity(bullet_entity, CSurface)
@@ -19,10 +19,7 @@ def system_collision_bullet_enemy(world:esper.World, bullet_entity_list:list[int
                 world.delete_entity(enemy_entity)
                 world.delete_entity(bullet_entity)
                 create_explosion(world, enemy_transform.pos, explosion_data["ENEMY"])
-                enemies_destroyed += 1
                 try:
                     bullet_entity_list.remove(bullet_entity)
                 except ValueError:
                     continue
-    
-    return enemies_destroyed

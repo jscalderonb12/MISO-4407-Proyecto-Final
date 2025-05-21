@@ -4,6 +4,7 @@ import esper
 import pygame
 
 from src.ecs.components.c_animation_enemy import CAnimationEnemy
+from src.ecs.components.c_explosion_timer import CExplosionTimer
 from src.ecs.components.c_rotation import CRotation
 from src.ecs.components.c_shooter import CShooter
 from src.ecs.components.c_surface import CSurface
@@ -14,6 +15,7 @@ from src.ecs.components.c_input_command import CInputCommand
 from src.ecs.components.c_animation import CAnimation
 from src.ecs.components.c_animation_player import CAnimationPlayer
 from src.ecs.components.tags.c_tag_chase_enemy import CTagChaseEnemy
+from src.ecs.components.tags.c_tag_explosion import CTagExplosion
 from src.ecs.components.tags.c_tag_player import CTagPlayer
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.ecs.components.tags.c_tag_cloud import CTagCloud
@@ -85,6 +87,16 @@ def create_ia_enemy(world, pos, enemy_info):
         distance_start_return= enemy_info["distance_start_return"]
     ))
     # world.add_component(enemy_entity, COriginEnemy(pos.copy()))
+
+def create_explosion(world: esper.World, pos: pygame.Vector2, explosion_info: dict):
+    explosion_sprite = ServiceLocator.images_service.get(explosion_info["image"])
+    
+    
+    explosion_entity = create_sprite(world, pos, pygame.Vector2(0,0), explosion_sprite)
+    world.add_component(explosion_entity, CAnimation(explosion_info["animations"]))
+    world.add_component(explosion_entity, CExplosionTimer(duration=0.5))
+    world.add_component(explosion_entity, CTagExplosion())
+    ServiceLocator.sounds_service.play(explosion_info["sound"])
 
 def create_player(world:esper.World, player_config:dict, game_rect:pygame.Rect) -> int:
     player_sprite = pygame.image.load(player_config["image"]).convert_alpha()
@@ -188,7 +200,6 @@ def create_input_player(world:esper.World):
     world.add_component(input_fire, CInputCommand(name="PLAYER_FIRE", key=pygame.K_f))
     world.add_component(input_pause, CInputCommand(name="PAUSE", key=pygame.K_p))
 
-
 def create_enemy_single(world: esper.World, pos: pygame.Vector2, cfg: dict, player_pos: pygame.Vector2 = None):
     """
     Crea un enemigo individual que aparece apuntando al jugador.
@@ -219,6 +230,7 @@ def create_enemy_squadron(world: esper.World, pos: pygame.Vector2, cfg: dict, en
     Crea un escuadrón en formación de flecha de 4 a 6 enemigos,
     apuntando hacia player_pos al momento del spawn.
     """
+    ServiceLocator.sounds_service.play("assets/snd/enemy_launch.ogg")
     squad = []
     prob = cfg.get("chaser_probability", 0.0)
     # Base de dirección hacia el jugador

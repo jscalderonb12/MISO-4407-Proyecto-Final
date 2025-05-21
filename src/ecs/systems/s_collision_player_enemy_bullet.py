@@ -1,14 +1,15 @@
 import esper
 
+from src.ecs.components.c_animation_player import CAnimationPlayer
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
-from src.ecs.components.c_animation_player import CAnimationPlayer
 from src.create.prefab_creator import create_explosion
 from src.ecs.components.tags.c_tag_enemy_bullet import CTagEnemyBullet
 
-def system_collision_player_enemy(world:esper.World, player_entity:int, pos_data:dict, explosion_data:dict):
-    components = world.get_components(CSurface, CTransform, CTagEnemy)
+def system_collision_player_enemy_bullet(world:esper.World, player_entity:int, pos_data:dict, explosion_data:dict):
+    components = world.get_components(CSurface, CTransform, CTagEnemyBullet)
+
     player_transform = world.component_for_entity(player_entity, CTransform)
     player_surface = world.component_for_entity(player_entity, CSurface)
     player_animation = world.component_for_entity(player_entity, CAnimationPlayer)

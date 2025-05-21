@@ -5,9 +5,14 @@ import math
 
 from src.ecs.components.c_rotation import CRotation
 from src.ecs.systems.s_animation_enemy import system_enemy_animation
+from src.ecs.systems.s_collision_between_bullets import system_collision_between_bullets
+from src.ecs.systems.s_collision_bullet_enemy import system_collision_bullet_enemy
+from src.ecs.systems.s_collision_player_enemy import system_collision_player_enemy
+from src.ecs.systems.s_collision_player_enemy_bullet import system_collision_player_enemy_bullet
 from src.ecs.systems.s_enemy_chase import system_enemy_chase
 from src.ecs.systems.s_enemy_shoot import system_enemy_shoot
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
+from src.ecs.systems.s_explosion_cleanup import system_explosion_cleanup
 from src.ecs.systems.s_update_rotation import system_update_rotation
 import src.engine.game_engine
 from src.engine.scenes.layout_scene import LayoutScene
@@ -25,6 +30,7 @@ from src.ecs.systems.s_cloud_spawner import system_cloud_spawner
 from src.ecs.systems.s_movement import system_apply_velocity, system_world_movement
 from src.ecs.systems.s_cloud_screen_limit import system_cloud_screen_limit
 from src.create.prefab_creator import create_enemy_spawner, create_player, create_input_player, create_bullet
+from src.engine.service_locator import ServiceLocator
 from src.ecs.systems.s_pause_game import system_pause_game
 from src.ecs.systems.s_text_blink import system_text_blink
 from src.ecs.systems.s_deleting_init_texts import system_deleting_init_texts
@@ -56,6 +62,8 @@ class PlayScene(LayoutScene):
             self.enemies_cfg = json.load(enemies_file)
         with open('assets/cfg/clouds.json') as clouds_file:
             self.clouds_config = json.load(clouds_file)
+        with open('assets/cfg/explosion.json', encoding="utf-8") as explosions_file:
+            self.explosions_config = json.load(explosions_file)
 
 
     def do_draw(self, screen):
@@ -63,6 +71,7 @@ class PlayScene(LayoutScene):
         super().do_draw(screen)
         
     def do_create(self):
+        ServiceLocator.sounds_service.play("assets/snd/game_start.ogg")
         self._bullet_entity_list = []
         create_cloud(self.ecs_world, self.levels_config, self.clouds_config, is_cloud_large=False)
         self._player_entity = create_player(self.ecs_world, self.player_config, self._game_engine.game_rect)
@@ -74,7 +83,6 @@ class PlayScene(LayoutScene):
     
     def do_update(self, delta_time: float):
         system_animation_player(self.ecs_world, self.player_position, delta_time)
-        system_animation(self.ecs_world, delta_time)
         system_update_rotation(self.ecs_world)
         system_apply_velocity(self.ecs_world, delta_time)
         system_world_movement(self.ecs_world, delta_time)
@@ -84,6 +92,12 @@ class PlayScene(LayoutScene):
         system_enemy_animation(self.ecs_world, delta_time)
         system_enemy_chase(self.ecs_world, delta_time)
         system_cloud_screen_limit(self.ecs_world, self.screen)
+        system_collision_player_enemy(self.ecs_world, self._player_entity, self.level_01_cfg["player_spawn"]["position"], self.explosions_config)
+        system_collision_player_enemy_bullet(self.ecs_world, self._player_entity, self.level_01_cfg["player_spawn"]["position"], self.explosions_config)
+        self.score += system_collision_bullet_enemy(self.ecs_world, self._bullet_entity_list, self.explosions_config)
+        system_collision_between_bullets(self.ecs_world, self._bullet_entity_list, self.explosions_config)
+        system_explosion_cleanup(self.ecs_world, delta_time)
+        system_animation(self.ecs_world, delta_time)
         system_pause_game(self.ecs_world, self.pause_game)
         system_text_blink(self.ecs_world, self.screen, self._game_engine.total_time)
         self.texts_entities = system_deleting_init_texts(self.ecs_world, self._game_engine.total_time, self.texts_entities)
