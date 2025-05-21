@@ -16,19 +16,34 @@
     
     "enemy_spawn_events": [
     {
-      "time": 0.0,
+      "time": 5.0,
       "enemy_type": "RedSquadron",
       "position": { "x": 560, "y": 180 }
     },
     {
-      "time": 0.0,
+      "time": 15.0,
       "enemy_type": "RedSquadron",
-      "position": { "x": 305, "y": 300 }
+      "position": { "x": 560, "y": 180 }
     },
     {
-      "time": 0.0,
+      "time": 25.0,
       "enemy_type": "RedSquadron",
-      "position": { "x":  40, "y": 180 }
+      "position": { "x": 560, "y": 180 }
+    },
+    {
+      "time": 30.0,
+      "enemy_type": "RedSquadron",
+      "position": { "x": 560, "y": 180 }
+    },
+    {
+      "time": 35.0,
+      "enemy_type": "RedSquadron",
+      "position": { "x": 560, "y": 180 }
+    },
+    {
+      "time": 45.0,
+      "enemy_type": "RedSquadron",
+      "position": { "x": 560, "y": 180 }
     },
     {
       "time": 0.0,

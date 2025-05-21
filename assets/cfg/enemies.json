@@ -37,8 +37,13 @@
         "initial_frame": 0
     },
     "velocity_min": 80,
-    "velocity_max": 120,
-    "squad_size": 5
+    "velocity_max": 90,
+    "squad_size": 5,
+    "spacing": 10,
+    "chaser_probability": 0.3,
+    "shoot_probability": 0.3,
+    "shoot_rate": 5,
+    "bullet_speed": 100  
   },
   "YellowChaser": {
     "type": "chaser",
@@ -50,9 +55,12 @@
         "initial_frame": 0
     },
     "velocity_chase": 80,
-    "velocity_return": 150,
+    "velocity_return": 50,
     "distance_start_chase": 80,
-    "distance_start_return": 200
+    "distance_start_return": 200,
+    "shoot_probability": 1.0,
+    "shoot_rate": 5,
+    "bullet_speed": 100   
   },
   "GreenShooter": {
     "type": "shooter",
@@ -63,7 +71,7 @@
         "framerate": 12,
         "initial_frame": 0
     },
-    "velocity": 60,
+    "velocity": 80,
     "fire_rate": 1.5,
     "bullet_speed": 200
   },
@@ -76,7 +84,7 @@
         "framerate": 12,
         "initial_frame": 0
     },
-    "velocity": 50,
+    "velocity": 90,
     "fire_rate": 2.0,
     "patrol_radius": 150
   }
