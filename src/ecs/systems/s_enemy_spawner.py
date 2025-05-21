@@ -33,32 +33,31 @@ def system_enemy_spawner(world: World, delta_time: float, enemy_types: dict, scr
     for ent, (spawner,) in world.get_components(CEnemySpawner):
         for evt in spawner.spawn_events:
             evt['elapsed'] = evt.get('elapsed', 0.0) + delta_time
-            if not evt.get('trigger', True) or evt['elapsed'] < evt.get('time', 0.0):
-                continue
-            evt['trigger'] = False
+            
+            if evt['elapsed'] >= evt['time']:
+                evt['elapsed'] %= evt['time']
+                etype = evt['enemy_type']
+                cfg = enemy_types.get(etype)
+                if not cfg:
+                    continue
 
-            etype = evt['enemy_type']
-            cfg = enemy_types.get(etype)
-            if not cfg:
-                continue
+                # Squadron: aparece frente al jugador
+                if cfg.get('type') == 'squadron' and player_pos and player_rot:
+                    spawn_dir = player_rot.direction
+                    spawn_dist = max(screen_rect.width, screen_rect.height) / 2 + 50
+                    pos = player_pos + spawn_dir * spawn_dist
+                    print(f"[Spawner] Squadron spawn_dir={spawn_dir}, spawn_pos={pos}")
+                    create_enemy_squadron(world, pos, cfg, enemy_types, player_pos)
+                    continue
 
-            # Squadron: aparece frente al jugador
-            if cfg.get('type') == 'squadron' and player_pos and player_rot:
-                spawn_dir = player_rot.direction
-                spawn_dist = max(screen_rect.width, screen_rect.height) / 2 + 50
-                pos = player_pos + spawn_dir * spawn_dist
-                print(f"[Spawner] Squadron spawn_dir={spawn_dir}, spawn_pos={pos}")
-                create_enemy_squadron(world, pos, cfg, enemy_types, player_pos)
-                continue
-
-            # Resto de tipos: borde aleatorio
-            pos = random_edge_position(screen_rect)
-            if cfg.get('type') == 'chaser':
-                create_enemy_chaser(world, pos, cfg, player_pos)
-            elif cfg.get('type') == 'shooter':
-                create_enemy_shooter(world, pos, cfg, player_pos)
-            else:
-                create_enemy_single(world, pos, cfg, player_pos)
+                # Resto de tipos: borde aleatorio
+                pos = random_edge_position(screen_rect)
+                if cfg.get('type') == 'chaser':
+                    create_enemy_chaser(world, pos, cfg, player_pos)
+                elif cfg.get('type') == 'shooter':
+                    create_enemy_shooter(world, pos, cfg, player_pos)
+                else:
+                    create_enemy_single(world, pos, cfg, player_pos)
 
 
 def random_edge_position(screen_rect: pygame.Rect) -> Vector2:

@@ -1,14 +1,33 @@
 {
-    "image": "assets/img/explosion.png",
-    "animations": {
-        "number_frames": 8,
-        "list": [
-            {
-                "name": "EXPLODE",
-                "start": 0,
-                "end": 7,
-                "framerate": 16
-            }
-        ]
+    "PLAYER": {
+        "sound": "assets/snd/player_die.ogg",
+        "image": "assets/img/explosion_bullets_space_05.png",
+        "animations": {
+            "number_frames": 4,
+            "list": [
+                {
+                    "name": "EXPLODE",
+                    "start": 0,
+                    "end": 3,
+                    "framerate": 12
+                }
+            ]
+        }
+    },
+    "ENEMY": {
+        "sound": "assets/snd/enemy_die.ogg",
+        "image": "assets/img/explosion_middle_enemies.png",
+        "animations": {
+            "number_frames": 6,
+            "list": [
+                {
+                    "name": "EXPLODE",
+                    "start": 0,
+                    "end": 5,
+                    "framerate": 16
+                }
+            ]
+        }
     }
+    
 }
