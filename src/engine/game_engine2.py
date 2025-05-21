@@ -26,7 +26,7 @@ class GameEngine:
         pygame.init()
         pygame.display.set_caption(self.window_config['title'])
 
-        self.screen = pygame.display.set_mode((self.window_config['size']['w'], self.window_config['size']['h']), pygame.SCALED)
+        self.screen = pygame.display.set_mode((self.window_config['size']['w'], self.window_config['size']['h']))
         self.bg_color = (self.window_config['bg_color']['r'], self.window_config['bg_color']['g'], self.window_config['bg_color']['b'])
         self.clock = pygame.time.Clock()
         self.is_running = False
