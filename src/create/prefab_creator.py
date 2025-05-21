@@ -185,6 +185,7 @@ def create_input_player(world:esper.World):
     input_down_wasd = world.create_entity()
     input_start_game = world.create_entity()
     input_fire = world.create_entity()
+    input_pause = world.create_entity()
 
     world.add_component(input_left_arrow, CInputCommand(name="PLAYER_LEFT", key=pygame.K_LEFT))
     world.add_component(input_right_arrow, CInputCommand(name="PLAYER_RIGHT", key=pygame.K_RIGHT))
@@ -197,6 +198,7 @@ def create_input_player(world:esper.World):
     world.add_component(input_start_game, CInputCommand(name="START_GAME", key=pygame.K_RETURN))
     world.add_component(input_fire, CInputCommand(name="PLAYER_FIRE", key=pygame.BUTTON_LEFT))
     world.add_component(input_fire, CInputCommand(name="PLAYER_FIRE", key=pygame.K_f))
+    world.add_component(input_pause, CInputCommand(name="PAUSE", key=pygame.K_p))
 
 def create_enemy_single(world: esper.World, pos: pygame.Vector2, cfg: dict, player_pos: pygame.Vector2 = None):
     """

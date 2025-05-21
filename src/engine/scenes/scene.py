@@ -26,7 +26,7 @@ class Scene:
         self._game_engine.switch_scene(new_scene_name)
 
     def do_create(self):
-        pass
+        system_rendering(self.ecs_world, self.screen)
 
     def do_update(self, delta_time:float):
         pass
