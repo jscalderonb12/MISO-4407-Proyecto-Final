@@ -1,0 +1,62 @@
+{
+    "CloudLarge": {
+        "image": "assets/img/clouds_large.png",
+        "animations": {
+            "number_frames": 4,
+            "list": [
+                {
+                    "name": "MOVE",
+                    "start": 0,
+                    "end": 0,
+                    "framerate": 2
+                }
+            ]
+        },
+        "velocity": 80
+    },
+    "CloudSmall": {
+        "image": "assets/img/clouds_small.png",
+        "animations": {
+            "number_frames": 4,
+            "list": [
+                {
+                    "name": "MOVE",
+                    "start": 0,
+                    "end": 0,
+                    "framerate": 2
+                }
+            ]
+        },
+        "velocity": 30
+    },
+    "CloudMediumA": {
+        "image": "assets/img/clouds_medium_A.png",
+        "animations": {
+            "number_frames": 4,
+            "list": [
+                {
+                    "name": "MOVE",
+                    "start": 0,
+                    "end": 0,
+                    "framerate": 2
+                }
+            ]
+        },
+        "velocity": 50
+    },
+    "CloudMediumB": {
+        "image": "assets/img/clouds_medium_B.png",
+        "animations": {
+            "number_frames": 4,
+            "list": [
+                {
+                    "name": "MOVE",
+                    "start": 1,
+                    "end": 0,
+                    "framerate": 2
+                }
+            ]
+        },
+        "velocity": 50
+    }
+}

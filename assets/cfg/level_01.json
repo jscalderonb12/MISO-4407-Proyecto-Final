@@ -8,30 +8,73 @@
     },
     "level_01": {
         "bg_color": {
-            "r": 0,
-            "g": 0,
-            "b": 99
+            "r": 30,
+            "g": 30,
+            "b": 50
         }
     },
+    "cloud_spawn_events": [
+        {
+            "type": "CloudLarge",
+            "position": {
+                "x": 50,
+                "y": 80
+            }
+        },
+        {
+            "type": "CloudLarge",
+            "position": {
+                "x": 200,
+                "y": 200
+            }
+        },
+        {
+            "type": "CloudSmall",
+            "position": {
+                "x": 30,
+                "y": 100
+            }
+        },
+        {
+            "type": "CloudSmall",
+            "position": {
+                "x": 180,
+                "y": 220
+            }
+        },
+        {
+            "type": "CloudMediumA",
+            "position": {
+                "x": 140,
+                "y": 100
+            }
+        },
+        {
+            "type": "CloudMediumA",
+            "position": {
+                "x": 5,
+                "y": 190
+            }
+        },
+        {
+            "type": "CloudMediumB",
+            "position": {
+                "x": 210,
+                "y": 40
+            }
+        },
+        {
+            "type": "CloudMediumB",
+            "position": {
+                "x": 70,
+                "y": 150
+            }
+        }
+    ],
     
     "enemy_spawn_events": [
     {
-      "time": 5.0,
-      "enemy_type": "RedSquadron",
-      "position": { "x": 560, "y": 180 }
-    },
-    {
-      "time": 15.0,
-      "enemy_type": "RedSquadron",
-      "position": { "x": 560, "y": 180 }
-    },
-    {
-      "time": 25.0,
-      "enemy_type": "RedSquadron",
-      "position": { "x": 560, "y": 180 }
-    },
-    {
-      "time": 30.0,
+      "time": 0.0,
       "enemy_type": "RedSquadron",
       "position": { "x": 560, "y": 180 }
     },

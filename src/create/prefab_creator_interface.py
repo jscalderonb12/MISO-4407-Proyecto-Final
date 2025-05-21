@@ -5,6 +5,7 @@ import esper
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.engine.service_locator import ServiceLocator
+from src.ecs.components.tags.c_tag_text import CTagText
 
 class TextAlignment(Enum):
     LEFT = 0,
@@ -26,4 +27,6 @@ def create_text(world:esper.World, txt:str, size:int, color:pygame.Color, pos:py
 
     world.add_component(text_entity,
                         CTransform(pos + origin))
+    world.add_component(text_entity,
+                        CTagText())
     return text_entity
