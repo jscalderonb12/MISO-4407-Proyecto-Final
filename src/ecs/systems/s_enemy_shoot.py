@@ -6,7 +6,9 @@ from esper import World
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_rotation import CRotation
 from src.ecs.components.c_shooter import CShooter
-from src.create.prefab_creator import create_bullet  # tu función existente
+from src.create.prefab_creator import create_bullet
+from src.ecs.components.tags.c_tag_bullet import CTagBullet
+from src.ecs.components.tags.c_tag_enemy_bullet import CTagEnemyBullet  # tu función existente
 
 def system_enemy_shoot(world: World, delta_time: float, bullets_cfg: dict):
     """
@@ -28,4 +30,9 @@ def system_enemy_shoot(world: World, delta_time: float, bullets_cfg: dict):
         direction = rot.direction  
 
         # crea tu bala usando tu prefab actual
-        create_bullet(world, bullet_pos, bullets_cfg, direction)
+        entity = create_bullet(world, bullet_pos, bullets_cfg, direction)
+        world.remove_component(entity, CTagBullet)
+        world.add_component(
+            entity,
+            CTagEnemyBullet()
+        )

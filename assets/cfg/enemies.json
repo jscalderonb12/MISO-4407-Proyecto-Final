@@ -36,8 +36,8 @@
         "framerate": 12,
         "initial_frame": 0
     },
-    "velocity_min": 80,
-    "velocity_max": 90,
+    "velocity_min": 60,
+    "velocity_max": 70,
     "squad_size": 5,
     "spacing": 10,
     "chaser_probability": 0.3,
@@ -54,7 +54,7 @@
         "framerate": 12,
         "initial_frame": 0
     },
-    "velocity_chase": 80,
+    "velocity_chase": 60,
     "velocity_return": 50,
     "distance_start_chase": 80,
     "distance_start_return": 200,
@@ -71,7 +71,7 @@
         "framerate": 12,
         "initial_frame": 0
     },
-    "velocity": 80,
+    "velocity": 60,
     "fire_rate": 1.5,
     "bullet_speed": 200
   },
@@ -84,7 +84,7 @@
         "framerate": 12,
         "initial_frame": 0
     },
-    "velocity": 90,
+    "velocity": 60,
     "fire_rate": 2.0,
     "patrol_radius": 150
   }

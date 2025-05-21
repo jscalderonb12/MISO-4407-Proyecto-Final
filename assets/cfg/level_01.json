@@ -79,12 +79,12 @@
       "position": { "x": 560, "y": 180 }
     },
     {
-      "time": 35.0,
+      "time": 15.0,
       "enemy_type": "RedSquadron",
       "position": { "x": 560, "y": 180 }
     },
     {
-      "time": 45.0,
+      "time": 25.0,
       "enemy_type": "RedSquadron",
       "position": { "x": 560, "y": 180 }
     },
