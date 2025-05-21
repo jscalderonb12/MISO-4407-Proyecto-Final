@@ -60,7 +60,7 @@ def system_enemy_spawner(world: World, total_time: float, enemy_types: dict, scr
                 elif cfg.get('type') == 'shooter':
                     create_enemy_shooter(world, pos, cfg, player_pos)
                 elif cfg.get('type') == 'boss':
-                    if plane_counter_stage[0] <= 39 and evt["trigger"]:
+                    if plane_counter_stage[0] <= 0 and evt["trigger"]:
                         cfg = enemy_types.get(evt["enemy_type"])
                         create_enemy_chaser(world, pos, cfg, player_pos)
                         evt["trigger"] = False
