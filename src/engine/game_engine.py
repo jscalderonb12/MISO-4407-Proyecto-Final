@@ -23,7 +23,7 @@ class GameEngine:
         
         self.GAME_HEIGHT = self.SCREEN_HEIGHT - self.UI_HEIGHT - self.FOOTER_HEIGHT
 
-        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.SCALED)
+        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), 0)
         self.interface_rect = pygame.Rect(0, 0, self.SCREEN_WIDTH, self.UI_HEIGHT)
         self.game_rect = pygame.Rect(0, self.UI_HEIGHT, self.SCREEN_WIDTH, self.GAME_HEIGHT)
         self.footer_rect = pygame.Rect(0, self.UI_HEIGHT + self.GAME_HEIGHT, self.SCREEN_WIDTH, self.FOOTER_HEIGHT)
