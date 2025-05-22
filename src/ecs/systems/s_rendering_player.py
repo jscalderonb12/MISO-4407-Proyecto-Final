@@ -18,6 +18,6 @@ def system_rendering_player(world:World, delta_time:float, switch_scene, start_g
             world.remove_component(ent, CTagHiddenPlayer)
             if world.has_component(ent, CTagWinner):
                 switch_scene("WIN_SCENE")
+                world.remove_component(ent, CTagWinner)
             else:
                 switch_scene("LEVEL_01_SCENE")
-            world.remove_component(ent, CTagWinner)
